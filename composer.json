@@ -1,0 +1,16 @@
+{
+    "name": "mminer237/spark-localize",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Mminer237\\SparkLocalize\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Matthew Miner",
+            "email": "mminer237@gmail.com"
+        }
+    ],
+    "require": {}
+}
