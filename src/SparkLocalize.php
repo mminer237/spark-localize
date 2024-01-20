@@ -55,7 +55,7 @@ class SparkLocalize {
 					$value,
 					flags: PREG_SPLIT_DELIM_CAPTURE
 				);
-				for ($i = 0; $i < count($split_value); $i += 2) {
+				for ($i = 0; $i < count($split_value) - 1; $i += 2) {
 					$split_value[$i] .= $split_value[$i + 1];
 					unset($split_value[$i + 1]);
 				}
@@ -76,10 +76,10 @@ class SparkLocalize {
 	}
 
 	private static function flattenInput(array $input): array {
-		$key_indices = array_flip(array_keys($input));
 		foreach ($input as $key => $value) {
 			if (is_array($value)) {
 				$value = self::flattenInput($value);
+				$key_indices = array_flip(array_keys($input));
 				$input = array_slice(
 					$input,
 					0,
@@ -90,12 +90,13 @@ class SparkLocalize {
 					array_map(fn($subKey) => "$key.$subKey", array_keys($value)),
 					array_values($value)
 				) +
-				array_slice(
-					$input,
-					$key_indices[$key],
-					preserve_keys: true
-				);
-				unset($input[$key]);
+				($key_indices[$key] + 1 < count($key_indices) ?
+					array_slice(
+						$input,
+						$key_indices[$key] + 1,
+						preserve_keys: true
+					) :
+					[]);
 			}
 		}
 		return $input;
