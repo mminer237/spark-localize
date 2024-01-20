@@ -47,6 +47,7 @@ HTML;
 					<tbody>' . PHP_EOL . $this->renderItems($input, $sourceLanguage) . "
 					</tbody>
 				</table>
+				<button type=\"submit\">Submit</button>
 			</section>\n";
 	}
 
