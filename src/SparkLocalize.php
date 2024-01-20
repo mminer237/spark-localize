@@ -2,6 +2,9 @@
 
 namespace SparkLocalize;
 
+use SparkLocalize\Layout\Layout;
+use SparkLocalize\Layout\DefaultLayout;
+
 class SparkLocalize {
 	public function __construct(
 		private string $title = 'Spark Localize',

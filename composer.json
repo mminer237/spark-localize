@@ -3,7 +3,7 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "Mminer237\\SparkLocalize\\": "src/"
+            "SparkLocalize\\": "src"
         }
     },
     "authors": [
