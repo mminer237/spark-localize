@@ -47,6 +47,67 @@ class SparkLocalize {
 			"htmlTags" => HtmlTags::Simplify
 		]
 	): string {
+		/* Simplify HTML tags */
+		switch ($options["htmlTags"]) {
+			case HtmlTags::Keep:
+				break;
+			case HtmlTags::Remove:
+				array_walk_recursive($input, function(&$value) {
+					$value = strip_tags($value);
+				});
+				break;
+			case HtmlTags::Simplify:
+				$tag_count = 0;
+				array_walk_recursive($input, function(&$value) use (&$tag_count) {
+					$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
+					$tag = null;
+					$closing = false;
+					$closing_n = null;
+					for ($i = 0; $i < strlen($value); $i++) {
+						if ($value[$i] === '<') {
+							$tag = '';
+						}
+						elseif ($tag === '' && $value[$i] === '/') {
+							$closing = true;
+							if ($closing_n === null) {
+								$closing_n = $tag_count;
+							}
+						}
+						elseif ($value[$i] === '>') {
+							if (!$tag) {
+								$tag = null;
+								continue;
+							}
+							if (!$closing) {
+								$tag_count++;
+								$n = $tag_count;
+								if ($closing_n !== null)
+									$closing_n++;
+							}
+							else {
+								$n = $closing_n--;
+								if ($closing_n === 0) {
+									$closing_n = null;
+								}
+							}
+							$value = substr_replace(
+								$value,
+								$n,
+								$i - strlen($tag),
+								strlen($tag)
+							);
+							$i -= strlen($tag) - strlen($n);
+							$tag = null;
+							$closing = false;
+						}
+						elseif ($tag !== null)  {
+							$tag .= $value[$i];
+						}
+					}
+				});
+				break;
+		}
+		
 		/* Split sentences */
 		if ($options["splitSentences"]) {
 			array_walk_recursive($input, function(&$value) {
@@ -63,10 +124,17 @@ class SparkLocalize {
 					$value = array_values($split_value);
 				}
 			});
-		}
-		print_r($input);
 
+			if ($options["htmlTags"] === HtmlTags::Simplify) {
+				array_walk_recursive($input, function(&$value) {
+					$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
+				});
+			}
+		}
+
+		/* Flatten input */
 		$input = self::flattenInput($input);
+
 		print_r($input);
 
 		return

@@ -37,28 +37,30 @@ HTML;
 					fn(string $lang) => "<option value=\"$lang\">$lang</option>",
 				$targetLanguages)) . '
 				</select>
-				<table>
-					<thead>
-						<tr>
-							<th>Source</th>
-							<th>Translation</th>
-						</tr>
-					</thead>
-					<tbody>' . PHP_EOL . $this->renderItems($input, $sourceLanguage) . "
-					</tbody>
-				</table>
-				<button type=\"submit\">Submit</button>
+				<form action="">
+					<table>
+						<thead>
+							<tr>
+								<th>Source</th>
+								<th>Translation</th>
+							</tr>
+						</thead>
+						<tbody>' . PHP_EOL . $this->renderItems($input, $sourceLanguage) . "
+						</tbody>
+					</table>
+					<button type=\"submit\">Submit</button>
+				</form>
 			</section>\n";
 	}
 
 	protected function renderItem(string $key, string $text, string $sourceLanguage = 'en'): string {
 		return <<<HTML
-								<tr>
-									<td>$text</td>
-									<td>
-										<input type="text" name="$key">
-									</td>
-								</tr>
+									<tr>
+										<td><pre>$text</pre></td>
+										<td>
+											<input type="text" name="$key">
+										</td>
+									</tr>
 		HTML;
 	}
 
