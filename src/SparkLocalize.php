@@ -28,9 +28,11 @@ class SparkLocalize {
 	 * 
 	 * e.g., `['greeting' => 'Hello, world!']`
 	 * 
-	 * @param string[] $targetLanguages
+	 * @param string[]|array<string, string> $targetLanguages
 	 * A list of language codes you want to give the option to
-	 * translate the strings into.
+	 * translate the strings into or an associative array of
+	 * language codes as the keys and the partially-translated
+	 * strings (in the same structure as $input) as the value.
 	 * 
 	 * @param array{
 	 * 	"splitSentences"?: bool,
@@ -135,11 +137,11 @@ class SparkLocalize {
 		/* Flatten input */
 		$input = self::flattenInput($input);
 
-		print_r($input);
+		// print_r($input);
 
 		return
-			$this->layout->renderHeader($this->title) .
-			$this->layout->renderBody($input, $targetLanguages) .
+			$this->layout->renderHeader($this->title, $targetLanguages) .
+			$this->layout->renderBody($input) .
 			$this->layout->renderFooter();
 	}
 

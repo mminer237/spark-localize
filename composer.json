@@ -12,5 +12,9 @@
             "email": "mminer237@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "ext-intl": "*",
+        "twbs/bootstrap": "^5.3",
+        "scssphp/scssphp": "^1.12"
+    }
 }
