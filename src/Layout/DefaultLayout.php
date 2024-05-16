@@ -75,4 +75,8 @@ HTML;
 </html>
 HTML;
 	}
+
+	public function getScript(): string {
+		return file_get_contents(__DIR__ . '/../assets/script.js');
+	}
 }

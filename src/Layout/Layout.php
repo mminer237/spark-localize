@@ -83,6 +83,7 @@ abstract class Layout {
 		));
 	}
 	abstract public function renderFooter(): string;
+	abstract public function getScript(): string;
 }
 
 ?>
