@@ -54,6 +54,27 @@ function updateEntry(key, value) {
 		return;
 	}
 
-	const input = document.querySelector(`input[name="${key}"]`);
-	input.placeholder = value;
+	let input = document.querySelector(`input[name="${key}"]`);
+	if (input !== null) {
+		input.placeholder = value;
+	}
+	else {
+		input = document.querySelector(`input[name^="${key}."]`);
+		if (input === null) {
+			console.error(`No input found for key ${key}`);
+		}
+		else {
+			/* Split key into parts */
+			const parts = value.split(/(?<=[.?!]"?)\s+/);
+			for (let i = 0; i < parts.length; i++) {
+				const input = document.querySelector(`input[name="${key}.${i}"]`);
+				if (input !== null) {
+					input.placeholder = parts[i];
+				}
+				else {
+					console.error(`No input found for key ${key}.${i}`);
+				}
+			}
+		}
+	}
 }

@@ -112,37 +112,43 @@ class SparkLocalize {
 		
 		/* Split sentences */
 		if ($options["splitSentences"]) {
-			array_walk_recursive($input, function(&$value) {
-				$split_value = preg_split(
-					'/([.?!]"?)\s+/',
-					$value,
-					flags: PREG_SPLIT_DELIM_CAPTURE
-				);
-				for ($i = 0; $i < count($split_value) - 1; $i += 2) {
-					$split_value[$i] .= $split_value[$i + 1];
-					unset($split_value[$i + 1]);
-				}
-				if (count($split_value) > 1) {
-					$value = array_values($split_value);
-				}
-			});
-
-			if ($options["htmlTags"] === HtmlTags::Simplify) {
-				array_walk_recursive($input, function(&$value) {
-					$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
-				});
-			}
+			$input = self::splitSentences($input, $options);
 		}
 
 		/* Flatten input */
 		$input = self::flattenInput($input);
 
-		// print_r($input);
-
 		return
 			$this->layout->renderHeader($this->title, $targetLanguages) .
 			$this->layout->renderBody($input) .
 			$this->layout->renderFooter();
+	}
+
+	private static function splitSentences(array $input, array &$options = []): array {
+		array_walk_recursive($input, function(&$value) {
+			$split_value = preg_split(
+				'/([.?!]"?)\s+/',
+				$value,
+				flags: PREG_SPLIT_DELIM_CAPTURE
+			);
+			for ($i = 0; $i < count($split_value) - 1; $i += 2) {
+				$split_value[$i] .= $split_value[$i + 1];
+				unset($split_value[$i + 1]);
+			}
+			if (count($split_value) > 1) {
+				$value = array_values($split_value);
+			}
+		});
+
+		if (
+			isset($options["htmlTags"]) &&
+			$options["htmlTags"] === HtmlTags::Simplify
+		) {
+			array_walk_recursive($input, function(&$value) {
+				$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
+			});
+		}
+		return $input;
 	}
 
 	private static function flattenInput(array $input): array {
