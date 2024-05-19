@@ -5,6 +5,10 @@ namespace SparkLocalize\Layout;
 require_once __DIR__ . '/../../vendor/autoload.php';
 use ScssPhp\ScssPhp\Compiler;
 
+enum Destination {
+	case Netlify;
+}
+
 abstract class Layout {
 	public function __construct(
 		public array $styles = [
@@ -63,9 +67,31 @@ abstract class Layout {
 	protected function renderData(array $targetLanguages): string {
 		return '<script>const targetLanguages = ' . json_encode($targetLanguages) . ';</script>';
 	}
+	/**
+	 * Renders the body of the page.
+	 * 
+	 * @param array<string, string> $input
+	 * An associative array of strings you want translated.
+	 * 
+	 * The key should be your own unique identifier for the string,
+	 * and the value should be the string you want translated.
+	 * 
+	 * e.g., `['greeting' => 'Hello, world!']`
+	 * 
+	 * @param string|Destination $destination
+	 * Either a URL to submit the form to or an enumerated form
+	 * destination which uses a different convention.
+	 * 
+	 * @param string $sourceLanguage
+	 * The ISO 639 language code of the language you are
+	 * translating from.
+	 * 
+	 * @return string 
+	 */
 	abstract public function renderBody(
-		array  $input,
-		string $sourceLanguage = 'en'
+		array              $input,
+		string|Destination $destination,
+		string             $sourceLanguage = 'en'
 	): string;
 	abstract protected function renderItem(
 		string $key,

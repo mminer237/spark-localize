@@ -3,7 +3,12 @@
 namespace SparkLocalize\Layout;
 
 class DefaultLayout extends Layout {
-	public function renderHeader(string $title, array $targetLanguages, string $description = '', string $extra = ''): string {
+	public function renderHeader(
+		string $title,
+		array  $targetLanguages,
+		string $description = '',
+		string $extra = ''
+	): string {
 		return <<<HTML
 <!DOCTYPE html>
 <html lang="en">
@@ -32,11 +37,19 @@ HTML . ($description ? "
 HTML;
 	}
 
-	public function renderBody(array $input, string $sourceLanguage = 'en'): string {
+	public function renderBody(
+		array              $input,
+		string|Destination $destination,
+		string             $sourceLanguage = 'en'
+	): string {
+		$destination_attribute = match ($destination) {
+			Destination::Netlify => 'data-netlify="true"',
+			default => 'action="' . $destination . '"'
+		};
 		return '
 			<section class="container p-4">
 				<h2>Translate '.\Locale::getDisplayLanguage($sourceLanguage).' to <input type="text" id="targetLanguage" name="targetLanguage"></h2>
-				<form action="">
+				<form name="translations" method="POST" '.$destination_attribute.'>
 					<div class="table-responsive card mb-2">
 						<table class="table mb-0">
 							<thead>
