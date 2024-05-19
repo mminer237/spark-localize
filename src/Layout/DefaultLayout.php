@@ -38,18 +38,20 @@ HTML;
 	}
 
 	public function renderBody(
-		array              $input,
-		string|Destination $destination,
-		string             $sourceLanguage = 'en'
+		array    $input,
+		string   $destination = "",
+		FormType $formType = FormType::Html,
+		string   $sourceLanguage = 'en'
 	): string {
-		$destination_attribute = match ($destination) {
-			Destination::Netlify => 'data-netlify="true"',
-			default => 'action="' . $destination . '"'
+		$action = $destination ? 'action="' . $destination . '"' : '';
+		$form_extra = match ($formType) {
+			FormType::Netlify => 'data-netlify="true"',
+			default => ''
 		};
 		return '
 			<section class="container p-4">
 				<h2>Translate '.\Locale::getDisplayLanguage($sourceLanguage).' to <input type="text" id="targetLanguage" name="targetLanguage"></h2>
-				<form name="translations" method="POST" '.$destination_attribute.'>
+				<form name="translations" method="POST" '.$action.' '.$form_extra.'>
 					<div class="table-responsive card mb-2">
 						<table class="table mb-0">
 							<thead>

@@ -5,7 +5,8 @@ namespace SparkLocalize\Layout;
 require_once __DIR__ . '/../../vendor/autoload.php';
 use ScssPhp\ScssPhp\Compiler;
 
-enum Destination {
+enum FormType {
+	case Html;
 	case Netlify;
 }
 
@@ -78,9 +79,14 @@ abstract class Layout {
 	 * 
 	 * e.g., `['greeting' => 'Hello, world!']`
 	 * 
-	 * @param string|Destination $destination
-	 * Either a URL to submit the form to or an enumerated form
-	 * destination which uses a different convention.
+	 * @param string $destination
+	 * The URL to submit the form to. (For Netlify, the page to go to after submission.)
+	 * 
+	 * @param FormType $formType
+	 * The type of form to render.
+	 * Valid values are:
+	 * - Html: A standard HTML form. (default)
+	 * - Netlify: A Netlify form.
 	 * 
 	 * @param string $sourceLanguage
 	 * The ISO 639 language code of the language you are
@@ -89,9 +95,10 @@ abstract class Layout {
 	 * @return string 
 	 */
 	abstract public function renderBody(
-		array              $input,
-		string|Destination $destination,
-		string             $sourceLanguage = 'en'
+		array    $input,
+		string   $destination,
+		FormType $formType = FormType::Html,
+		string   $sourceLanguage = 'en'
 	): string;
 	abstract protected function renderItem(
 		string $key,

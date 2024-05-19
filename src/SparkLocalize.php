@@ -4,7 +4,7 @@ namespace SparkLocalize;
 
 use SparkLocalize\Layout\Layout;
 use SparkLocalize\Layout\DefaultLayout;
-use SparkLocalize\Layout\Destination;
+use SparkLocalize\Layout\FormType;
 
 enum HtmlTags {
 	case Keep;
@@ -45,7 +45,7 @@ class SparkLocalize {
 	public function render(
 		array $input,
 		array $targetLanguages,
-		string|Destination $destination,
+		string $destination,
 		array $options = [
 			"splitSentences" => true,
 			"htmlTags" => HtmlTags::Simplify
