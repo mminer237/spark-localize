@@ -139,7 +139,8 @@ class SparkLocalize {
 				$value,
 				flags: PREG_SPLIT_DELIM_CAPTURE
 			);
-			for ($i = 0; $i < count($split_value) - 1; $i += 2) {
+			$first_split_length = count($split_value);
+			for ($i = 0; $i < $first_split_length - 1; $i += 2) {
 				$split_value[$i] .= $split_value[$i + 1];
 				unset($split_value[$i + 1]);
 			}
