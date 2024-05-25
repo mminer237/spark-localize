@@ -2,7 +2,6 @@
 
 namespace SparkLocalize\Layout;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
 use ScssPhp\ScssPhp\Compiler;
 
 enum FormType {
@@ -13,12 +12,12 @@ enum FormType {
 abstract class Layout {
 	public function __construct(
 		public array $styles = [
-			'assets/bootstrap.css'
+			'assets/style.css'
 		]
 	) {}
 	protected function buildBootstrap(string $customCss, array $components): string {
 		$scssCompiler = new Compiler();
-		$scssCompiler->setImportPaths( __DIR__ . '/../../vendor/twbs/bootstrap/scss/');
+		$scssCompiler->setImportPaths($_ENV['COMPOSER_VENDOR_DIR'] ?? __DIR__ . '/../../../../twbs/bootstrap/scss');
 		return $scssCompiler->compileString(
 			$customCss .
 			'@import "mixins/banner";
