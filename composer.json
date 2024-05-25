@@ -1,6 +1,8 @@
 {
     "name": "mminer237/spark-localize",
     "type": "library",
+    "homepage": "https://github.com/mminer237/spark-localize",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "SparkLocalize\\": "src"
@@ -9,7 +11,8 @@
     "authors": [
         {
             "name": "Matthew Miner",
-            "email": "mminer237@gmail.com"
+            "email": "mminer237@gmail.com",
+            "homepage": "https://matthewminer.name"
         }
     ],
     "require": {
