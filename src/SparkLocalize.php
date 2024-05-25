@@ -192,6 +192,10 @@ class SparkLocalize {
 		return $input;
 	}
 
+	public function getStyle(): string {
+		return $this->layout->getStyle();
+	}
+
 	public function getScript(): string {
 		return $this->layout->getScript();
 	}

@@ -15,49 +15,22 @@ abstract class Layout {
 		public array $styles = [
 			'assets/bootstrap.css'
 		]
-	) {
-		$this->buildBootstrap(
-			'$color-mode-type: media-query;',
-			[
-				'functions',
-				'variables',
-				'variables-dark',
-				'maps',
-				'mixins',
-				'utilities',
-
-				'root',
-				'reboot',
-				'type',
-				'containers',
-				'tables',
-				'buttons',
-				'card',
-
-				'helpers',
-				'utilities/api'
-			]
-		);
-	}
-	protected function buildBootstrap(string $customCss, array $components): bool {
+	) {}
+	protected function buildBootstrap(string $customCss, array $components): string {
 		$scssCompiler = new Compiler();
 		$scssCompiler->setImportPaths( __DIR__ . '/../../vendor/twbs/bootstrap/scss/');
-		file_put_contents(
-			'assets/bootstrap.css',
-			$scssCompiler->compileString(
-				$customCss .
-				'@import "mixins/banner";
-				@include bsBanner("");' .
-				implode(
-					PHP_EOL,
-					array_map(
-						fn(string $component) => '@import "' . $component . '";',
-						$components
-					)
+		return $scssCompiler->compileString(
+			$customCss .
+			'@import "mixins/banner";
+			@include bsBanner("");' .
+			implode(
+				PHP_EOL,
+				array_map(
+					fn(string $component) => '@import "' . $component . '";',
+					$components
 				)
-			)->getCss()
-		);
-		return true;
+			)
+		)->getCss();
 	}
 	abstract public function renderHeader(
 		string $title,
@@ -117,6 +90,30 @@ abstract class Layout {
 		));
 	}
 	abstract public function renderFooter(): string;
+	public function getStyle(): string {
+		return $this->buildBootstrap(
+			'$color-mode-type: media-query;',
+			[
+				'functions',
+				'variables',
+				'variables-dark',
+				'maps',
+				'mixins',
+				'utilities',
+
+				'root',
+				'reboot',
+				'type',
+				'containers',
+				'tables',
+				'buttons',
+				'card',
+
+				'helpers',
+				'utilities/api'
+			]
+		);
+	}
 	abstract public function getScript(): string;
 }
 
