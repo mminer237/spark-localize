@@ -4,7 +4,6 @@ namespace SparkLocalize;
 
 use SparkLocalize\Layout\Layout;
 use SparkLocalize\Layout\DefaultLayout;
-use SparkLocalize\Layout\FormType;
 
 enum HtmlTags {
 	case Keep;
@@ -15,6 +14,9 @@ enum HtmlTags {
 class SparkLocalize {
 	public function __construct(
 		private string $title = 'Spark Localize',
+		private string $heading = 'Spark Localize',
+		private string $description = '',
+		private string $extra = '',
 		private Layout $layout = new DefaultLayout()
 	) {}
 
@@ -123,7 +125,10 @@ class SparkLocalize {
 		return
 			$this->layout->renderHeader(
 				$this->title,
-				$targetLanguages
+				$targetLanguages,
+				$this->heading,
+				$this->description,
+				$this->extra
 			) .
 			$this->layout->renderBody(
 				$input,

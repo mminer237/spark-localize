@@ -62,6 +62,7 @@ abstract class Layout {
 	abstract public function renderHeader(
 		string $title,
 		array  $targetLanguages,
+		string $heading = '',
 		string $description = '',
 		string $extra = ''
 	): string;

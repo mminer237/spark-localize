@@ -6,6 +6,7 @@ class DefaultLayout extends Layout {
 	public function renderHeader(
 		string $title,
 		array  $targetLanguages,
+		string $heading = '',
 		string $description = '',
 		string $extra = ''
 	): string {
@@ -29,7 +30,9 @@ HTML . ($description ? "
 	</head>
 	<body class="d-flex flex-column min-vh-100 element">
 		<header>
-			<h1 class="text-center">$title</h1>
+			<h1 class="text-center">
+HTML . ($heading ?? $title) . <<<HTML
+			</h1>
 HTML . ($description ? "
 			<p>$description</p>" : '') . PHP_EOL . <<<HTML
 		</header>
