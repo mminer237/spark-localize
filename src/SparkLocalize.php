@@ -61,6 +61,9 @@ class SparkLocalize {
 		]
 	): string {
 		/* Simplify HTML tags */
+		if (!isset($options["htmlTags"])) {
+			$options["htmlTags"] = HtmlTags::Simplify;
+		}
 		switch ($options["htmlTags"]) {
 			case HtmlTags::Keep:
 				break;
@@ -91,6 +94,9 @@ class SparkLocalize {
 		}
 		
 		/* Split sentences */
+		if (!isset($options["splitSentences"])) {
+			$options["splitSentences"] = true;
+		}
 		if ($options["splitSentences"]) {
 			$input = self::splitSentences($input, $options);
 		}
@@ -109,7 +115,7 @@ class SparkLocalize {
 			$this->layout->renderBody(
 				$input,
 				$destination,
-				$options['formType']
+				$options['formType'] ?? FormType::Html
 			) .
 			$this->layout->renderFooter();
 	}
