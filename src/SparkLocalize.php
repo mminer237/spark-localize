@@ -64,44 +64,7 @@ class SparkLocalize {
 				break;
 			case HtmlTags::Simplify:
 				$tag_count = 0;
-				array_walk_recursive($input, function(&$value) use (&$tag_count) {
-					$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
-					$tag = null;
-					$closing = false;
-					$unclosed = [];
-					for ($i = 0; $i < strlen($value); $i++) {
-						if ($value[$i] === '<') {
-							$tag = '';
-						}
-						elseif ($tag === '' && $value[$i] === '/') {
-							$closing = true;
-						}
-						elseif ($value[$i] === '>') {
-							if (!$tag) {
-								$tag = null;
-								continue;
-							}
-							if (!$closing) {
-								$unclosed[] = $n = ++$tag_count;
-							}
-							else {
-								$n = array_pop($unclosed);
-							}
-							$value = substr_replace(
-								$value,
-								$n,
-								$i - strlen($tag),
-								strlen($tag)
-							);
-							$i -= strlen($tag) - strlen($n);
-							$tag = null;
-							$closing = false;
-						}
-						elseif ($tag !== null)  {
-							$tag .= $value[$i];
-						}
-					}
-				});
+				self::simplifyHtmlTags($input, $tag_count);
 				break;
 		}
 		
@@ -126,6 +89,47 @@ class SparkLocalize {
 				$destination
 			) .
 			$this->layout->renderFooter();
+	}
+
+	public static function simplifyHtmlTags(array &$input, int &$tag_count): void {
+		array_walk_recursive($input, function(&$value) use (&$tag_count) {
+			$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
+			$tag = null;
+			$closing = false;
+			$unclosed = [];
+			for ($i = 0; $i < strlen($value); $i++) {
+				if ($value[$i] === '<') {
+					$tag = '';
+				}
+				elseif ($tag === '' && $value[$i] === '/') {
+					$closing = true;
+				}
+				elseif ($value[$i] === '>') {
+					if (!$tag) {
+						$tag = null;
+						continue;
+					}
+					if (!$closing) {
+						$unclosed[] = $n = ++$tag_count;
+					}
+					else {
+						$n = array_pop($unclosed);
+					}
+					$value = substr_replace(
+						$value,
+						$n,
+						$i - strlen($tag),
+						strlen($tag)
+					);
+					$i -= strlen($tag) - strlen($n);
+					$tag = null;
+					$closing = false;
+				}
+				elseif ($tag !== null)  {
+					$tag .= $value[$i];
+				}
+			}
+		});
 	}
 
 	private static function splitSentences(array $input, array &$options = []): array {
