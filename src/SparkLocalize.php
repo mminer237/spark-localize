@@ -68,16 +68,13 @@ class SparkLocalize {
 					$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
 					$tag = null;
 					$closing = false;
-					$closing_n = null;
+					$unclosed = [];
 					for ($i = 0; $i < strlen($value); $i++) {
 						if ($value[$i] === '<') {
 							$tag = '';
 						}
 						elseif ($tag === '' && $value[$i] === '/') {
 							$closing = true;
-							if ($closing_n === null) {
-								$closing_n = $tag_count;
-							}
 						}
 						elseif ($value[$i] === '>') {
 							if (!$tag) {
@@ -85,16 +82,10 @@ class SparkLocalize {
 								continue;
 							}
 							if (!$closing) {
-								$tag_count++;
-								$n = $tag_count;
-								if ($closing_n !== null)
-									$closing_n++;
+								$unclosed[] = $n = ++$tag_count;
 							}
 							else {
-								$n = $closing_n--;
-								if ($closing_n === 0) {
-									$closing_n = null;
-								}
+								$n = array_pop($unclosed);
 							}
 							$value = substr_replace(
 								$value,
