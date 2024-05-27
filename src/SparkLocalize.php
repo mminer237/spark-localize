@@ -24,7 +24,7 @@ class SparkLocalize {
 	/**
 	 * Converts the text data to a full web page.
 	 * 
-	 * @param array<string, string> $input
+	 * @param array<string, string|array> $input
 	 * An associative array of strings you want translated.
 	 * 
 	 * The key should be your own unique identifier for the string,
@@ -32,7 +32,7 @@ class SparkLocalize {
 	 * 
 	 * e.g., `['greeting' => 'Hello, world!']`
 	 * 
-	 * @param string[]|array<string, string> $targetLanguages
+	 * @param string[]|array<string, string|array> $targetLanguages
 	 * A list of language codes you want to give the option to
 	 * translate the strings into or an associative array of
 	 * language codes as the keys and the partially-translated
@@ -68,10 +68,25 @@ class SparkLocalize {
 				array_walk_recursive($input, function(&$value) {
 					$value = strip_tags($value);
 				});
+				foreach ($targetLanguages as $language => $_) {
+					if (!is_array($targetLanguages[$language])) {
+						continue;
+					}
+					array_walk_recursive($targetLanguages[$language], function(&$value) {
+						$value = strip_tags($value);
+					});
+				}
 				break;
 			case HtmlTags::Simplify:
 				$tag_count = 0;
 				self::simplifyHtmlTags($input, $tag_count);
+				foreach ($targetLanguages as $language => $_) {
+					if (!is_array($targetLanguages[$language])) {
+						continue;
+					}
+					$tag_count = 0;
+					self::simplifyHtmlTags($targetLanguages[$language], $tag_count);
+				}
 				break;
 		}
 		
@@ -99,7 +114,7 @@ class SparkLocalize {
 			$this->layout->renderFooter();
 	}
 
-	public static function simplifyHtmlTags(array &$input, int &$tag_count): void {
+	private static function simplifyHtmlTags(array &$input, int &$tag_count): void {
 		array_walk_recursive($input, function(&$value) use (&$tag_count) {
 			$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
 			$tag = null;
