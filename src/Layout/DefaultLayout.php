@@ -77,7 +77,7 @@ HTML;
 									<tr>
 										<td lang="$sourceLanguage">$text</td>
 										<td>
-											<input type="text" class="form-control" name="$key">
+											<input type="text" class="form-control" name="$key" dir="auto">
 										</td>
 									</tr>
 		HTML;
