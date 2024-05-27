@@ -53,7 +53,8 @@ abstract class Layout {
 	 * e.g., `['greeting' => 'Hello, world!']`
 	 * 
 	 * @param string $destination
-	 * The URL to submit the form to. (For Netlify, the page to go to after submission.)
+	 * The URL to submit the form to.
+	 * (For Netlify, the page to go to after submission.)
 	 * 
 	 * @param FormType $formType
 	 * The type of form to render.

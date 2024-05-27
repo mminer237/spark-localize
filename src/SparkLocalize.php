@@ -4,6 +4,7 @@ namespace SparkLocalize;
 
 use SparkLocalize\Layout\Layout;
 use SparkLocalize\Layout\DefaultLayout;
+use SparkLocalize\Layout\FormType;
 
 enum HtmlTags {
 	case Keep;
@@ -37,10 +38,15 @@ class SparkLocalize {
 	 * language codes as the keys and the partially-translated
 	 * strings (in the same structure as $input) as the value.
 	 * 
+	 * @param string $destination
+	 * The URL to submit the form to.
+	 * (For Netlify, the page to go to after submission.)
+	 * 
 	 * @param array{
-	 * 	"splitSentences"?: bool,
-	 * 	"htmlTags"?: HtmlTags
-	 * }
+	 * 	"splitSentences": bool,
+	 * 	"htmlTags": HtmlTags,
+	 * 	"formType": FormType
+	 * } $options
 	 * 
 	 * @return string The Spark Localize web page HTML.
 	 */
@@ -50,7 +56,8 @@ class SparkLocalize {
 		string $destination,
 		array $options = [
 			"splitSentences" => true,
-			"htmlTags" => HtmlTags::Simplify
+			"htmlTags" => HtmlTags::Simplify,
+			"formType" => FormType::Html
 		]
 	): string {
 		/* Simplify HTML tags */
@@ -86,7 +93,8 @@ class SparkLocalize {
 			) .
 			$this->layout->renderBody(
 				$input,
-				$destination
+				$destination,
+				$options['formType']
 			) .
 			$this->layout->renderFooter();
 	}
