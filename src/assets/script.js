@@ -33,7 +33,8 @@ function updateLanguage() {
 	const lang = document.getElementById("targetLanguage").value;
 
 	/* Update language */
-	document.querySelectorAll("input").forEach(input => {
+	document.querySelector("input[type=hidden][name=targetLanguage]").value = lang;
+	document.querySelectorAll("input[type=text]").forEach(input => {
 		input.lang = lang;
 		input.placeholder = "";
 	});

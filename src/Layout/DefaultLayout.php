@@ -55,6 +55,7 @@ HTML;
 			<section class="container p-4">
 				<h2>Translate '.\Locale::getDisplayLanguage($sourceLanguage).' to <input type="text" id="targetLanguage" name="targetLanguage"></h2>
 				<form name="translations" method="POST" '.$action.' '.$form_extra.'>
+					<input type="hidden" name="targetLanguage">
 					<div class="table-responsive card mb-2">
 						<table class="table mb-0">
 							<thead>
