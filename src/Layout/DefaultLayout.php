@@ -2,6 +2,8 @@
 
 namespace SparkLocalize\Layout;
 
+use SparkLocalize\Enums\FormType;
+
 class DefaultLayout extends Layout {
 	public function renderHeader(
 		string $title,
@@ -31,9 +33,8 @@ HTML . ($description ? "
 	<body class="d-flex flex-column min-vh-100 element">
 		<header>
 			<h1 class="text-center">
-HTML . ($heading ?? $title) . <<<HTML
-			</h1>
-HTML . ($description ? "
+HTML . ($heading ?? $title) .
+			'</h1>' . ($description ? "
 			<p>$description</p>" : '') . PHP_EOL . <<<HTML
 		</header>
 		<main>

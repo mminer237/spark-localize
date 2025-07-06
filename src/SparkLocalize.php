@@ -4,13 +4,8 @@ namespace SparkLocalize;
 
 use SparkLocalize\Layout\Layout;
 use SparkLocalize\Layout\DefaultLayout;
-use SparkLocalize\Layout\FormType;
-
-enum HtmlTags {
-	case Keep;
-	case Remove;
-	case Simplify;
-}
+use SparkLocalize\Enums\FormType;
+use SparkLocalize\Enums\HtmlTags;
 
 class SparkLocalize {
 	public function __construct(
@@ -53,7 +48,7 @@ class SparkLocalize {
 	public function render(
 		array $input,
 		array $targetLanguages,
-		string $destination,
+		string $destination = '',
 		array $options = [
 			"splitSentences" => true,
 			"htmlTags" => HtmlTags::Simplify,
@@ -81,14 +76,12 @@ class SparkLocalize {
 				}
 				break;
 			case HtmlTags::Simplify:
-				$tag_count = 0;
-				self::simplifyHtmlTags($input, $tag_count);
+				self::simplifyHtmlTags($input);
 				foreach ($targetLanguages as $language => $_) {
 					if (!is_array($targetLanguages[$language])) {
 						continue;
 					}
-					$tag_count = 0;
-					self::simplifyHtmlTags($targetLanguages[$language], $tag_count);
+					self::simplifyHtmlTags($targetLanguages[$language]);
 				}
 				break;
 		}
@@ -120,8 +113,9 @@ class SparkLocalize {
 			$this->layout->renderFooter();
 	}
 
-	private static function simplifyHtmlTags(array &$input, int &$tag_count): void {
-		array_walk_recursive($input, function(&$value) use (&$tag_count) {
+	public static function simplifyHtmlTags(array &$input, int &$tag_count = 0): array {
+		$tags = [];
+		array_walk_recursive($input, function(&$value, $key) use (&$tag_count) {
 			$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
 			$tag = null;
 			$closing = false;
@@ -151,6 +145,7 @@ class SparkLocalize {
 						strlen($tag)
 					);
 					$i -= strlen($tag) - strlen($n);
+					// TODO: Add tag to correct branch's tag list
 					$tag = null;
 					$closing = false;
 				}
@@ -159,6 +154,7 @@ class SparkLocalize {
 				}
 			}
 		});
+		return $tags;
 	}
 
 	private static function splitSentences(array $input, array &$options = []): array {

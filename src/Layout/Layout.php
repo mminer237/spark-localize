@@ -3,11 +3,7 @@
 namespace SparkLocalize\Layout;
 
 use ScssPhp\ScssPhp\Compiler;
-
-enum FormType {
-	case Html;
-	case Netlify;
-}
+use SparkLocalize\Enums\FormType;
 
 abstract class Layout {
 	public function __construct(
