@@ -6,6 +6,7 @@ use SparkLocalize\Layout\Layout;
 use SparkLocalize\Layout\DefaultLayout;
 use SparkLocalize\Enums\FormType;
 use SparkLocalize\Enums\HtmlTags;
+use SparkLocalize\Models\TagNode;
 
 class SparkLocalize {
 	public function __construct(
@@ -18,31 +19,31 @@ class SparkLocalize {
 
 	/**
 	 * Converts the text data to a full web page.
-	 * 
+	 *
 	 * @param array<string, string|array> $input
 	 * An associative array of strings you want translated.
-	 * 
+	 *
 	 * The key should be your own unique identifier for the string,
 	 * and the value should be the string you want translated.
-	 * 
+	 *
 	 * e.g., `['greeting' => 'Hello, world!']`
-	 * 
+	 *
 	 * @param string[]|array<string, string|array> $targetLanguages
 	 * A list of language codes you want to give the option to
 	 * translate the strings into or an associative array of
 	 * language codes as the keys and the partially-translated
 	 * strings (in the same structure as $input) as the value.
-	 * 
+	 *
 	 * @param string $destination
 	 * The URL to submit the form to.
 	 * (For Netlify, the page to go to after submission.)
-	 * 
+	 *
 	 * @param array{
 	 * 	"splitSentences": bool,
 	 * 	"htmlTags": HtmlTags,
 	 * 	"formType": FormType
 	 * } $options
-	 * 
+	 *
 	 * @return string The Spark Localize web page HTML.
 	 */
 	public function render(
@@ -85,7 +86,7 @@ class SparkLocalize {
 				}
 				break;
 		}
-		
+
 		/* Split sentences */
 		if (!isset($options["splitSentences"])) {
 			$options["splitSentences"] = true;
@@ -113,27 +114,64 @@ class SparkLocalize {
 			$this->layout->renderFooter();
 	}
 
-	public static function simplifyHtmlTags(array &$input, int &$tag_count = 0): array {
+	/**
+	 * Replaces the actual HTML tags and data with numbered tags.
+	 *
+	 * @param array<string, string|array> $input
+	 * An associative array of strings you want translated.
+	 *
+	 * The key should be your own unique identifier for the string,
+	 * and the value should be the string you want translated.
+	 *
+	 * e.g., `['greeting' => 'Hello, world!']`
+	 *
+	 * @return array<TagNode>
+	 * A list of the unsimplified HTML tags found in the input.
+	 */
+	public static function simplifyHtmlTags(array &$input): array {
+		/** @var array<int, TagNode> $tags A list of the tags replaced. */
 		$tags = [];
-		array_walk_recursive($input, function(&$value, $key) use (&$tag_count) {
+		$tag_count = 0;
+		array_walk_recursive($input, function(&$value, $key) use (&$tags, &$tag_count) {
 			$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
-			$tag = null;
+			$tag = '';
+			$attribute = '';
+			$attributes = [];
+			$tag_complete = false;
+			$attribute_complete = false;
 			$closing = false;
 			$unclosed = [];
 			for ($i = 0; $i < strlen($value); $i++) {
 				if ($value[$i] === '<') {
 					$tag = '';
+					$attribute = '';
+					$attributes = [];
+					$tag_complete = false;
+					$attribute_complete = false;
+					$closing = false;
 				}
 				elseif ($tag === '' && $value[$i] === '/') {
 					$closing = true;
 				}
+				elseif ($value[$i] === ' ') {
+					$tag_complete = true;
+					$attribute_complete = false;
+				}
+				elseif ($tag_complete && $value[$i] === '=') {
+					$attribute_complete = true;
+					$attributes[$attribute] = '';
+				}
 				elseif ($value[$i] === '>') {
 					if (!$tag) {
-						$tag = null;
 						continue;
 					}
 					if (!$closing) {
 						$unclosed[] = $n = ++$tag_count;
+
+						$tags[$n] = new TagNode(
+							tagName: $tag,
+							attributes: $attributes
+						);
 					}
 					else {
 						$n = array_pop($unclosed);
@@ -145,12 +183,17 @@ class SparkLocalize {
 						strlen($tag)
 					);
 					$i -= strlen($tag) - strlen($n);
-					// TODO: Add tag to correct branch's tag list
-					$tag = null;
-					$closing = false;
 				}
-				elseif ($tag !== null)  {
-					$tag .= $value[$i];
+				else {
+					if (!$tag_complete) {
+						$tag .= $value[$i];
+					}
+					elseif (!$attribute_complete) {
+						$attribute .= $value[$i];
+					}
+					else {
+						$attributes[$attribute] .= $value[$i];
+					}
 				}
 			}
 		});
