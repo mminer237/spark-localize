@@ -157,7 +157,11 @@ class SparkLocalize {
 					$tag_complete = true;
 					$attribute_complete = false;
 				}
-				elseif ($tag_complete && $value[$i] === '=') {
+				elseif (
+					$tag_complete &&
+					!$attribute_complete &&
+					$value[$i] === '='
+				) {
 					$attribute_complete = true;
 					$attributes[$attribute] = '';
 				}
