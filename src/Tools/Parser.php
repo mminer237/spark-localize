@@ -89,7 +89,7 @@ class Parser {
 		foreach ($this->tags as $n => $tag) {
 			$attributes_string = "";
 			foreach ($tag->attributes as $attr => $val) {
-				$attributes_string .= " $attr=\"$val\"";
+				$attributes_string .= " $attr=$val";
 			}
 			$input = preg_replace(
 				'/<' . $n . '>/',
