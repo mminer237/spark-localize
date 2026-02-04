@@ -7,6 +7,7 @@ use SparkLocalize\SparkLocalize;
 
 class Parser {
 	private array $tags;
+	private array $options;
 
 	public function __construct(
 		array $input,
@@ -15,12 +16,13 @@ class Parser {
 		]
 	)
 	{
+		$this->options = $options;
 		if (isset($options['htmlTags']) && $options['htmlTags'] === HtmlTags::Simplify) {
 			$tag_count = 0;
 			$this->tags = SparkLocalize::simplifyHtmlTags($input);
 		}
 	}
-	
+
 	public function parseCsv(string $output): array {
 		$lines = preg_split('/\r?\n/', trim($output));
 		$headers = str_getcsv(array_shift($lines));
@@ -59,7 +61,7 @@ class Parser {
 		$data = [];
 		foreach ($entries as $row => $entry) {
 			foreach ($entry as $i => $value) {
-				if (isset($options['htmlTags']) && $options['htmlTags'] === HtmlTags::Simplify) {
+				if (isset($this->options['htmlTags']) && $this->options['htmlTags'] === HtmlTags::Simplify) {
 					$value = $this->complicateHtmlTags($value);
 				}
 
@@ -82,8 +84,27 @@ class Parser {
 		return $data;
 	}
 
+	/** Replace number tags back with original HTML */
 	private function complicateHtmlTags(string $input): string {
-		// TODO
+		foreach ($this->tags as $n => $tag) {
+			$attributes_string = "";
+			foreach ($tag->attributes as $attr => $val) {
+				$attributes_string .= " $attr=\"$val\"";
+			}
+			$input = preg_replace(
+				'/<' . $n . '>/',
+				'<' . $tag->tagName . $attributes_string . '>',
+				$input
+			);
+			$input = preg_replace(
+				'/<\/' . $n . '>/',
+				'</' . $tag->tagName . '>',
+				$input
+			);
+		}
+		if (preg_match('/<\/?\d+>/', $input, $matches) === 1) {
+			throw new \Exception("Unable to complicate HTML tag \"$matches[0]\": There are more HTML tags in the CSV than in the original input");
+		}
 		return $input;
 	}
 }
