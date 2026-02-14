@@ -18,6 +18,7 @@
     "require": {
         "ext-intl": "*",
         "twbs/bootstrap": "^5.3",
-        "scssphp/scssphp": "^1.12"
+        "scssphp/scssphp": "^1.12",
+        "php-tui/php-tui": "^0.2.1"
     }
 }
