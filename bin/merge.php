@@ -176,39 +176,42 @@ else {
 
 $unmerged = [];
 $results = [];
-function check_arrays($arrays, $path) {
+function compare_transations($translations, $path) {
 	global $unmerged, $results;
-	foreach ($arrays as $array) {
-		foreach ($array as $key => $value) {
+	for ($i = 0; $i < count($translations); $i++) {
+		foreach ($translations[$i] as $key => $value) {
 			$compiled_path = $path === null ? $key : "$path.$key";
 			if (is_array($value)) {
-				$subarrays = [];
+				$array_values = [];
 				$type_error = false;
-				foreach ($arrays as $array) {
-					if (isset($array[$key])) {
-						if (!is_array($array[$key])) {
+				for ($j = $i; $j < count($translations); $j++) {
+					if (isset($translations[$j][$key])) {
+						if (!is_array($translations[$j][$key])) {
 							// Array and string conflict
 							$type_error = true;
 						}
-						$subarrays[] = $array[$key];
+						$array_values[] = $translations[$j][$key];
 					}
 				}
 				if ($type_error) {
-					$unmerged[$compiled_path] = $subarrays;
+					$unmerged[$compiled_path] = $array_values;
 				}
 				else {
-					check_arrays($subarrays, $compiled_path);
+					compare_transations($array_values, $compiled_path);
 				}
 			}
 			else {
 				$values = [];
-				foreach ($arrays as $array) {
-					if (!empty($array[$key]) && !is_array($array[$key])) {
-						$values[] = $array[$key];
+				for ($j = $i; $j < count($translations); $j++) {
+					if (!empty($translations[$j][$key])) {
+						$values[] = $translations[$j][$key];
 					}
 				}
 				if (count(array_unique($values)) > 1) {
 					$unmerged[$compiled_path] = $values;
+				}
+				else if (count($values) === 0) {
+					// No translation for this key, so just skip
 				}
 				else {
 					add_result($compiled_path, $values[0]);
@@ -227,7 +230,7 @@ function add_result($path, $value) {
 	unset($results_pointer);
 }
 echo "Comparing translations..." . PHP_EOL;
-check_arrays($translations, null);
+compare_transations($translations, null);
 
 $unmerged_total = count($unmerged);
 $unmerged_total_digits = floor(log10($unmerged_total) + 1);
