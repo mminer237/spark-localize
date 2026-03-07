@@ -134,46 +134,50 @@ class SparkLocalize {
 		$tag_count = 0;
 		array_walk_recursive($input, function(&$value, $key) use (&$tags, &$tag_count) {
 			$value = preg_replace('/^<[\w-]+>(.*)<\/[\w-]+>$/', '$1', $value);
-			$tag = '';
+			$tag_name = '';
 			$attribute = '';
 			$attributes = [];
-			$tag_complete = false;
+			$tag_name_complete = false;
 			$attribute_complete = false;
 			$closing = false;
+			$tag_length = 0;
 			$unclosed = [];
 			for ($i = 0; $i < strlen($value); $i++) {
 				if ($value[$i] === '<') {
-					$tag = '';
+					$tag_name = '';
 					$attribute = '';
 					$attributes = [];
-					$tag_complete = false;
+					$tag_name_complete = false;
 					$attribute_complete = false;
 					$closing = false;
+					$tag_length = 0;
 				}
-				elseif ($tag === '' && $value[$i] === '/') {
+				elseif ($tag_name === '' && $value[$i] === '/') {
 					$closing = true;
 				}
 				elseif ($value[$i] === ' ') {
-					$tag_complete = true;
+					$tag_name_complete = true;
 					$attribute_complete = false;
+					$tag_length++;
 				}
 				elseif (
-					$tag_complete &&
+					$tag_name_complete &&
 					!$attribute_complete &&
 					$value[$i] === '='
 				) {
 					$attribute_complete = true;
 					$attributes[$attribute] = '';
+					$tag_length++;
 				}
 				elseif ($value[$i] === '>') {
-					if (!$tag) {
+					if (!$tag_name) {
 						continue;
 					}
 					if (!$closing) {
 						$unclosed[] = $n = ++$tag_count;
 
 						$tags[$n] = new TagNode(
-							tagName: $tag,
+							tagName: $tag_name,
 							attributes: $attributes
 						);
 					}
@@ -183,14 +187,14 @@ class SparkLocalize {
 					$value = substr_replace(
 						$value,
 						$n,
-						$i - strlen($tag),
-						strlen($tag)
+						$i - $tag_length,
+						$tag_length
 					);
-					$i -= strlen($tag) - strlen($n);
+					$i -= $tag_length - strlen($n);
 				}
 				else {
-					if (!$tag_complete) {
-						$tag .= $value[$i];
+					if (!$tag_name_complete) {
+						$tag_name .= $value[$i];
 					}
 					elseif (!$attribute_complete) {
 						$attribute .= $value[$i];
@@ -198,6 +202,7 @@ class SparkLocalize {
 					else {
 						$attributes[$attribute] .= $value[$i];
 					}
+					$tag_length++;
 				}
 			}
 		});
