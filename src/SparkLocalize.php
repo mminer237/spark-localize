@@ -212,7 +212,7 @@ class SparkLocalize {
 	private static function splitSentences(array $input, array &$options = []): array {
 		array_walk_recursive($input, function(&$value) {
 			$split_value = preg_split(
-				'/([.?!]"?)\s+/',
+				'/([.?!。？！]"?)\s+/',
 				$value,
 				flags: PREG_SPLIT_DELIM_CAPTURE
 			);

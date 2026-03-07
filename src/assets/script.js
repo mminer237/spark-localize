@@ -66,7 +66,7 @@ function updateEntry(key, value) {
 		}
 		else {
 			/* Split key into parts */
-			const parts = value.split(/(?<=[.?!]"?)\s+/);
+			const parts = value.split(/(?<=[.?!。？！]"?)\s+/);
 			for (let i = 0; i < parts.length; i++) {
 				const input = document.querySelector(`input[name="${key}.${i}"]`);
 				if (input !== null) {
