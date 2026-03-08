@@ -66,7 +66,7 @@ class Parser {
 				}
 
 				if (isset($mapping[$i])) {
-					if ($mapping[$i] !== "")
+					if ($mapping[$i] !== "" && !str_contains("。？！", mb_substr($mapping[$i], -1)))
 						$mapping[$i] .= " ";
 					$mapping[$i] .= $value;
 				}
